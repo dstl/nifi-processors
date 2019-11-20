@@ -5,12 +5,12 @@
     <parent>
         <groupId>org.apache.nifi</groupId>
         <artifactId>nifi-nar-bundles</artifactId>
-        <version>1.9.2</version>
+        <version>1.10.0</version>
     </parent>
 
     <groupId>uk.gov.dstl.nifi</groupId>
     <artifactId>machinetranslation</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <packaging>pom</packaging>
 
     <name>Machine Translation NiFi Components</name>

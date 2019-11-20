@@ -12,9 +12,6 @@ This processor can be built by calling
 
 in the top level directory. The resultant NAR file will be saved in `machinetranslation-nar/target`.
 
-Due to the version of Surefire used by NiFi, an older version of Java is required to build the processor.
-Building has been successfully tested on OpenJDK 8, but is known to fail on OpenJDK 10.
-
 ## Configuration
 
 To configure the processor, you must set the `Connector` property to the fully qualified name of the Java connector,

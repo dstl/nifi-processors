@@ -5,11 +5,11 @@
     <parent>
         <groupId>uk.gov.dstl.nifi</groupId>
         <artifactId>machinetranslation</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
     </parent>
 
     <artifactId>machinetranslation-processors</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <packaging>jar</packaging>
 
     <name>Machine Translation Processors</name>
@@ -36,7 +36,7 @@
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-utils</artifactId>
-            <version>1.9.2</version>
+            <version>1.10.0</version>
         </dependency>
 
         <dependency>
@@ -58,7 +58,7 @@
         <dependency>
             <groupId>org.apache.nifi</groupId>
             <artifactId>nifi-mock</artifactId>
-            <version>1.9.2</version>
+            <version>1.10.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
