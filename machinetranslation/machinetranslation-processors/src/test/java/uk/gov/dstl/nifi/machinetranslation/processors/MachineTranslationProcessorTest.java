@@ -20,13 +20,16 @@ package uk.gov.dstl.nifi.machinetranslation.processors;
  * #L%
  */
 
-import java.nio.charset.StandardCharsets;
 import org.apache.commons.io.IOUtils;
 import org.apache.nifi.util.TestRunner;
 import org.apache.nifi.util.TestRunners;
 import org.junit.Before;
 import org.junit.Test;
 import uk.gov.dstl.machinetranslation.connector.api.utils.ConnectorUtils;
+
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MachineTranslationProcessorTest {
 
@@ -133,5 +136,25 @@ public class MachineTranslationProcessorTest {
   public void testEmptyJson() {
     testRunner.setProperty(MachineTranslationProcessor.PROP_CONNECTOR_CONFIG.getName(), "");
     testRunner.assertNotValid();
+  }
+
+
+  @Test
+  public void testExpression() {
+    Map<String, String> attributes = new HashMap<>();
+    attributes.put("lang", "fr");
+
+    testRunner.setProperty(MachineTranslationProcessor.PROP_SOURCE_LANGUAGE.getName(), "${lang}");
+    testRunner.setProperty(MachineTranslationProcessor.PROP_TARGET_LANGUAGE.getName(), "en");
+    testRunner.setProperty(
+        MachineTranslationProcessor.PROP_CONNECTOR.getName(), TestConnector.class.getName());
+
+
+    testRunner.enqueue(IOUtils.toInputStream("Bonjour le monde", StandardCharsets.UTF_8), attributes);
+
+    testRunner.run();
+
+    testRunner.assertTransferCount(MachineTranslationProcessor.REL_SUCCESS.getName(), 1);
+    testRunner.assertTransferCount(MachineTranslationProcessor.REL_FAILURE.getName(), 0);
   }
 }

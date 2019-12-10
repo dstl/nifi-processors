@@ -22,16 +22,13 @@ package uk.gov.dstl.nifi.machinetranslation.processors;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.nifi.annotation.behavior.RequiresInstanceClassLoading;
 import org.apache.nifi.annotation.documentation.CapabilityDescription;
 import org.apache.nifi.annotation.documentation.Tags;
 import org.apache.nifi.components.PropertyDescriptor;
 import org.apache.nifi.components.ValidationResult;
+import org.apache.nifi.expression.ExpressionLanguageScope;
 import org.apache.nifi.flowfile.FlowFile;
 import org.apache.nifi.processor.*;
 import org.apache.nifi.processor.exception.ProcessException;
@@ -44,6 +41,11 @@ import uk.gov.dstl.machinetranslation.connector.api.Translation;
 import uk.gov.dstl.machinetranslation.connector.api.exceptions.ConfigurationException;
 import uk.gov.dstl.machinetranslation.connector.api.exceptions.ConnectorException;
 import uk.gov.dstl.machinetranslation.connector.api.utils.ConnectorUtils;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 /** NiFi processor for translating text */
 @Tags({"translation", "machine translation", "dstl", "text"})
@@ -65,6 +67,7 @@ public class MachineTranslationProcessor extends AbstractProcessor {
           .required(true)
           .defaultValue(ConnectorUtils.LANGUAGE_AUTO)
           .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
+          .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
           .build();
   public static final PropertyDescriptor PROP_TARGET_LANGUAGE =
       new PropertyDescriptor.Builder()
@@ -74,6 +77,7 @@ public class MachineTranslationProcessor extends AbstractProcessor {
           .required(true)
           .defaultValue("en")
           .addValidator(StandardValidators.NON_EMPTY_VALIDATOR)
+          .expressionLanguageSupported(ExpressionLanguageScope.FLOWFILE_ATTRIBUTES)
           .build();
   public static final PropertyDescriptor PROP_CONNECTOR =
       new PropertyDescriptor.Builder()
@@ -177,6 +181,15 @@ public class MachineTranslationProcessor extends AbstractProcessor {
   @Override
   public void onTrigger(final ProcessContext context, final ProcessSession session)
       throws ProcessException {
+    // Get Flow File
+    FlowFile flowFile = session.get();
+    if (flowFile == null) {
+      return;
+    }
+
+    String src = context.getProperty(PROP_SOURCE_LANGUAGE).evaluateAttributeExpressions(flowFile).getValue();
+    String tgt = context.getProperty(PROP_TARGET_LANGUAGE).evaluateAttributeExpressions(flowFile).getValue();
+
     /*
      *  In NiFi, there's no event for property modification after validation, only before.
      *  So we'll check here whether they've changed, and if so update the connector as required.
@@ -231,9 +244,6 @@ public class MachineTranslationProcessor extends AbstractProcessor {
           throw new ProcessException("Unable to retrieve supported languages", e);
         }
 
-        String src = context.getProperty(PROP_SOURCE_LANGUAGE).getValue();
-        String tgt = context.getProperty(PROP_TARGET_LANGUAGE).getValue();
-
         boolean matchFound;
         if (ConnectorUtils.LANGUAGE_AUTO.equals(src)) {
           matchFound = languagePairs.stream().anyMatch(lp -> lp.getTargetLanguage().equals(tgt));
@@ -246,12 +256,6 @@ public class MachineTranslationProcessor extends AbstractProcessor {
           throw new ProcessException("Requested languages aren't supported");
         }
       }
-    }
-
-    // Get Flow File
-    FlowFile flowFile = session.get();
-    if (flowFile == null) {
-      return;
     }
 
     // Read content
@@ -270,8 +274,8 @@ public class MachineTranslationProcessor extends AbstractProcessor {
     try {
       t =
           connector.translate(
-              context.getProperty(PROP_SOURCE_LANGUAGE).getValue(),
-              context.getProperty(PROP_TARGET_LANGUAGE).getValue(),
+              src,
+              tgt,
               originalContent);
     } catch (ConnectorException ce) {
       LOGGER.warn("Translation failed", ce);
