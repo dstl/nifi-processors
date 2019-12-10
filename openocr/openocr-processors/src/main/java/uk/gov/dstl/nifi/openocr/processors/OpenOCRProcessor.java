@@ -23,6 +23,13 @@ package uk.gov.dstl.nifi.openocr.processors;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.Closeable;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.util.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -41,14 +48,6 @@ import org.apache.nifi.processor.*;
 import org.apache.nifi.processor.exception.ProcessException;
 import org.apache.nifi.processor.util.StandardValidators;
 import uk.gov.dstl.openocr.OpenOCRRequestBase64;
-
-import java.io.Closeable;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.util.*;
 
 /**
  * Uses an external OpenOCR (https://github.com/tleyden/open-ocr) instance to extract text from
@@ -138,15 +137,17 @@ public class OpenOCRProcessor extends AbstractProcessor {
 
   @Override
   protected void init(final ProcessorInitializationContext context) {
-    this.descriptors = List.of(PROPERTY_OPENOCR_SCHEME,
-        PROPERTY_OPENOCR_HOST,
-        PROPERTY_OPENOCR_PORT,
-        PROPERTY_PREPROCESSORS,
-        PROPERTY_ENGINE_ARGS);
+    this.descriptors =
+        List.of(
+            PROPERTY_OPENOCR_SCHEME,
+            PROPERTY_OPENOCR_HOST,
+            PROPERTY_OPENOCR_PORT,
+            PROPERTY_PREPROCESSORS,
+            PROPERTY_ENGINE_ARGS);
 
-    this.relationships = Set.of(RELATIONSHIP_EXTRACTED,
-        RELATIONSHIP_ORIGINAL_SUCCESS,
-        RELATIONSHIP_ORIGINAL_FAILURE);
+    this.relationships =
+        Set.of(
+            RELATIONSHIP_EXTRACTED, RELATIONSHIP_ORIGINAL_SUCCESS, RELATIONSHIP_ORIGINAL_FAILURE);
   }
 
   @Override
@@ -199,7 +200,10 @@ public class OpenOCRProcessor extends AbstractProcessor {
         // TODO: We could optimise this by only doing it when the configuration changes
         Map<String, Object> arguments =
             OBJECT_MAPPER.readValue(
-                context.getProperty(PROPERTY_ENGINE_ARGS).evaluateAttributeExpressions(flowFile).getValue(),
+                context
+                    .getProperty(PROPERTY_ENGINE_ARGS)
+                    .evaluateAttributeExpressions(flowFile)
+                    .getValue(),
                 new TypeReference<HashMap<String, Object>>() {});
         request.setEngineArgs(arguments);
       } catch (IOException e) {

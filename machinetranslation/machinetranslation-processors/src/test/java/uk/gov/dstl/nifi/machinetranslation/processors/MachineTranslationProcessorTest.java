@@ -20,16 +20,15 @@ package uk.gov.dstl.nifi.machinetranslation.processors;
  * #L%
  */
 
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.apache.nifi.util.TestRunner;
 import org.apache.nifi.util.TestRunners;
 import org.junit.Before;
 import org.junit.Test;
 import uk.gov.dstl.machinetranslation.connector.api.utils.ConnectorUtils;
-
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
 
 public class MachineTranslationProcessorTest {
 
@@ -138,7 +137,6 @@ public class MachineTranslationProcessorTest {
     testRunner.assertNotValid();
   }
 
-
   @Test
   public void testExpression() {
     testRunner.setProperty(MachineTranslationProcessor.PROP_SOURCE_LANGUAGE.getName(), "${lang}");
@@ -148,7 +146,8 @@ public class MachineTranslationProcessorTest {
 
     Map<String, String> attributes = new HashMap<>();
     attributes.put("lang", "fr");
-    testRunner.enqueue(IOUtils.toInputStream("Bonjour le monde", StandardCharsets.UTF_8), attributes);
+    testRunner.enqueue(
+        IOUtils.toInputStream("Bonjour le monde", StandardCharsets.UTF_8), attributes);
 
     testRunner.run();
 

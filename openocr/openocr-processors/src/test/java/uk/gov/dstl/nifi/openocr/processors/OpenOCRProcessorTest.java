@@ -20,6 +20,15 @@ package uk.gov.dstl.nifi.openocr.processors;
  * #L%
  */
 
+import static org.junit.Assert.assertTrue;
+import static org.mockserver.integration.ClientAndServer.startClientAndServer;
+import static org.mockserver.model.HttpRequest.request;
+import static org.mockserver.model.HttpResponse.response;
+import static org.mockserver.model.StringBody.subString;
+import static org.mockserver.verify.VerificationTimes.exactly;
+
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.nifi.processor.exception.ProcessException;
 import org.apache.nifi.util.TestRunner;
 import org.apache.nifi.util.TestRunners;
@@ -27,16 +36,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockserver.integration.ClientAndServer;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.junit.Assert.assertTrue;
-import static org.mockserver.integration.ClientAndServer.startClientAndServer;
-import static org.mockserver.model.HttpRequest.request;
-import static org.mockserver.model.HttpResponse.response;
-import static org.mockserver.model.StringBody.subString;
-import static org.mockserver.verify.VerificationTimes.exactly;
 
 public class OpenOCRProcessorTest {
 
@@ -206,8 +205,7 @@ public class OpenOCRProcessorTest {
 
     testRunner.setProperty(OpenOCRProcessor.PROPERTY_OPENOCR_PORT.getName(), "1080");
     testRunner.setProperty(
-        OpenOCRProcessor.PROPERTY_ENGINE_ARGS.getName(),
-        "{\"lang\":\"${lang}\"}");
+        OpenOCRProcessor.PROPERTY_ENGINE_ARGS.getName(), "{\"lang\":\"${lang}\"}");
 
     Map<String, String> attributes = new HashMap<>();
     attributes.put("lang", "fr");
