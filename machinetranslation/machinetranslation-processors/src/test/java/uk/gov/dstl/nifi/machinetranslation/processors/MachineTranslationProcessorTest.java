@@ -141,15 +141,13 @@ public class MachineTranslationProcessorTest {
 
   @Test
   public void testExpression() {
-    Map<String, String> attributes = new HashMap<>();
-    attributes.put("lang", "fr");
-
     testRunner.setProperty(MachineTranslationProcessor.PROP_SOURCE_LANGUAGE.getName(), "${lang}");
     testRunner.setProperty(MachineTranslationProcessor.PROP_TARGET_LANGUAGE.getName(), "en");
     testRunner.setProperty(
         MachineTranslationProcessor.PROP_CONNECTOR.getName(), TestConnector.class.getName());
 
-
+    Map<String, String> attributes = new HashMap<>();
+    attributes.put("lang", "fr");
     testRunner.enqueue(IOUtils.toInputStream("Bonjour le monde", StandardCharsets.UTF_8), attributes);
 
     testRunner.run();

@@ -20,13 +20,6 @@ package uk.gov.dstl.nifi.openocr.processors;
  * #L%
  */
 
-import static org.junit.Assert.assertTrue;
-import static org.mockserver.integration.ClientAndServer.startClientAndServer;
-import static org.mockserver.model.HttpRequest.request;
-import static org.mockserver.model.HttpResponse.response;
-import static org.mockserver.model.StringBody.subString;
-import static org.mockserver.verify.VerificationTimes.exactly;
-
 import org.apache.nifi.processor.exception.ProcessException;
 import org.apache.nifi.util.TestRunner;
 import org.apache.nifi.util.TestRunners;
@@ -34,6 +27,16 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockserver.integration.ClientAndServer;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.Assert.assertTrue;
+import static org.mockserver.integration.ClientAndServer.startClientAndServer;
+import static org.mockserver.model.HttpRequest.request;
+import static org.mockserver.model.HttpResponse.response;
+import static org.mockserver.model.StringBody.subString;
+import static org.mockserver.verify.VerificationTimes.exactly;
 
 public class OpenOCRProcessorTest {
 
@@ -189,5 +192,33 @@ public class OpenOCRProcessorTest {
 
     testRunner.assertAllFlowFilesTransferred(
         OpenOCRProcessor.RELATIONSHIP_ORIGINAL_FAILURE.getName());
+  }
+
+  @Test
+  public void testExpression() {
+    mockServer
+        .when(request().withMethod("POST").withPath("/ocr").withBody(subString("\"lang\":\"fr\"")))
+        .respond(
+            response()
+                .withStatusCode(200)
+                .withHeader("Content-Type", "plain/text; charset=utf-8")
+                .withBody("This is a test image\n\n" + "Testing, testing... 1... 2...\n" + "3..."));
+
+    testRunner.setProperty(OpenOCRProcessor.PROPERTY_OPENOCR_PORT.getName(), "1080");
+    testRunner.setProperty(
+        OpenOCRProcessor.PROPERTY_ENGINE_ARGS.getName(),
+        "{\"lang\":\"${lang}\"}");
+
+    Map<String, String> attributes = new HashMap<>();
+    attributes.put("lang", "fr");
+    testRunner.enqueue(OpenOCRProcessorTest.class.getResourceAsStream("ocr_test.png"), attributes);
+
+    testRunner.run();
+
+    mockServer.verify(request().withPath("/ocr"), exactly(1));
+
+    testRunner.assertTransferCount(OpenOCRProcessor.RELATIONSHIP_ORIGINAL_SUCCESS.getName(), 1);
+    testRunner.assertTransferCount(OpenOCRProcessor.RELATIONSHIP_EXTRACTED.getName(), 1);
+    testRunner.assertTransferCount(OpenOCRProcessor.RELATIONSHIP_ORIGINAL_FAILURE.getName(), 0);
   }
 }

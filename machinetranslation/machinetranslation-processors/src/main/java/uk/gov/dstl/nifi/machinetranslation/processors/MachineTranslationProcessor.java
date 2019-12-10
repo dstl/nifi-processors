@@ -154,18 +154,13 @@ public class MachineTranslationProcessor extends AbstractProcessor {
 
   @Override
   protected void init(final ProcessorInitializationContext context) {
-    final List<PropertyDescriptor> descriptors = new ArrayList<>();
-    descriptors.add(PROP_SOURCE_LANGUAGE);
-    descriptors.add(PROP_TARGET_LANGUAGE);
-    descriptors.add(PROP_CONNECTOR);
-    descriptors.add(PROP_CONNECTOR_CONFIG);
-    descriptors.add(PROP_EXTRA_RESOURCE);
-    this.descriptors = Collections.unmodifiableList(descriptors);
+    this.descriptors = List.of(PROP_SOURCE_LANGUAGE,
+        PROP_TARGET_LANGUAGE,
+        PROP_CONNECTOR,
+        PROP_CONNECTOR_CONFIG,
+        PROP_EXTRA_RESOURCE);
 
-    final Set<Relationship> relationships = new HashSet<>();
-    relationships.add(REL_SUCCESS);
-    relationships.add(REL_FAILURE);
-    this.relationships = Collections.unmodifiableSet(relationships);
+    this.relationships = Set.of(REL_SUCCESS, REL_FAILURE);
   }
 
   @Override
