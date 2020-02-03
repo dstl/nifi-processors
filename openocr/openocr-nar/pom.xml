@@ -5,11 +5,11 @@
     <parent>
         <groupId>uk.gov.dstl.nifi</groupId>
         <artifactId>openocr</artifactId>
-        <version>1.0.2</version>
+        <version>1.0.3</version>
     </parent>
 
     <artifactId>openocr-nar</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <packaging>nar</packaging>
 
     <name>OpenOCR NAR</name>
@@ -37,7 +37,7 @@
         <dependency>
             <groupId>uk.gov.dstl.nifi</groupId>
             <artifactId>openocr-processors</artifactId>
-            <version>1.0.2</version>
+            <version>1.0.3</version>
         </dependency>
     </dependencies>
 

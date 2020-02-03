@@ -5,12 +5,12 @@
     <parent>
         <groupId>org.apache.nifi</groupId>
         <artifactId>nifi-nar-bundles</artifactId>
-        <version>1.10.0</version>
+        <version>1.11.0</version>
     </parent>
 
     <groupId>uk.gov.dstl.nifi</groupId>
     <artifactId>machinetranslation</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <packaging>pom</packaging>
 
     <name>Machine Translation NiFi Components</name>
@@ -38,7 +38,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>3.2.0</version>
+                <version>3.2.1</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -66,7 +66,7 @@
             <plugin>
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>
-                <version>1.26.1</version>
+                <version>1.27.0</version>
                 <configuration>
                     <java>
                         <googleJavaFormat>
