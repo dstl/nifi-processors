@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.apache.nifi</groupId>
         <artifactId>nifi-nar-bundles</artifactId>
-        <version>1.11.1</version>
+        <version>1.11.3</version>
     </parent>
 
     <groupId>uk.gov.dstl.nifi</groupId>
